@@ -1,25 +1,45 @@
+// Game Functions
+
+// function to generate a random numeric value
+var randomNumber = function(min, max) {
+    var value = Math.floor(Math.random() * (max - min) + min);
+
+    return value;
+}
+
+
+var fightOrSkip = function() {
+    // ask player if they'd like to fight or run
+    var promptFight = window.prompt("Would you like to FIGHT or SKIP this battle? Enter 'FIGHT' or 'SKIP' to choose.");
+
+    if (promptFight === "" || promptFight === null) {
+        window.alert("You need to provide a valid answer! Please try again.");
+        return fightOrSkip();
+    }
+
+    promptFight = promptFight.toLowerCase();
+    // if player picks "skip" confirjm and then stop the loop
+    if (promptFight === "skip") {
+        // Confirm player wants to skip fight
+        var confirmSkip = window.confirm("Are you sure you'd like to quit?");
+
+        // if TRUE leave fight
+        if (confirmSkip) {
+            window.alert(playerInfo.name + " has decided to skip this fight. Goodbye!");
+            // subtract money from the player
+            playerInfo.money = Math.max(0, playerInfo.money - 10);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
+
+// fight function (now with parameter for enemy's object holding name, health, and attack values)
 var fight = function(enemy) {
     while(playerInfo.health > 0 && enemy.health > 0) {
-        // ask player if they'd like to fight or run
-        var promptFight = window.prompt("Would you like to FIGHT or SKIP this battle? Enter 'FIGHT' or 'SKIP' to choose.");
-
-        // if player picks "skip" confirjm and then stop the loop
-        if (promptFight === "skip" || promptFight === "SKIP" || promptFight === "Skip") {
-            // Confirm player wants to skip fight
-            var confirmSkip = window.confirm("Are you sure you'd like to quit?");
-
-            // if TRUE leave fight
-            if (confirmSkip) {
-                window.alert(playerInfo.name + " has decided to skip this fight. Goodbye!");
-                // subtract money from the player
-                playerInfo.money = Math.max(0, playerInfo.money - 10);
-                break;
-            }
-            // if FALSE ask question again by running fight() function again
-            else {
-                fight();
-            }
-        }
+        fightOrSkip();
 
         // generate random damage value based on player's attack power
         var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
@@ -40,7 +60,7 @@ var fight = function(enemy) {
 
         // generate random damage value based on enemy's attack power
         var damage = randomNumber(enemy.attack - 3, enemy.attack);
-        playerInfo.health = Math.max(0, damage);
+        playerInfo.health = Math.max(0, playerInfo.health - damage);
 
         // Log a resulting message to the console so we know that it worked.
         console.log(enemy.name + " attacked " + playerInfo.name + ". " + playerInfo.name + " now has " + playerInfo.health + " health remaining.");
@@ -65,15 +85,13 @@ var startGame = function() {
         if (playerInfo.health > 0) {
             // let player know what round they are in
             window.alert("Welcome to Robot Gladiators! Round " + (i + 1));
+            debugger;
 
             // pick new enemy to fight based on the index of the enemyNames array
             var pickedEnemyObj = enemyInfo[i];
 
             // reset enemyHealth before starting new fight
             pickedEnemyObj.health = randomNumber(40, 60);
-
-            // use debugger to pause script from running and check what's going on at that moment in the code
-            // debugger;
 
             // pass the pickedEnemyName variable's value into the fight function, where it will assume the value of the enemyName parameter
             fight(pickedEnemyObj);
@@ -126,7 +144,7 @@ var endGame = function() {
 // shop function
 var shop = function() {
     // ask player what they';d like to do
-    var shopOptionPrompt = window.prompt("Would you like to REFILL your health, UPGRADE your attack, or LEAVE the store?");
+    var shopOptionPrompt = window.prompt("Would you like to REFILL your health, UPGRADE your attack, or LEAVE the store? Please enter one 'REFILL', 'UPGRADE', or 'LEAVE' to make a choice.");
 
     // use switch to carry out action
     switch (shopOptionPrompt) {
@@ -157,16 +175,21 @@ var shop = function() {
             shop();
             break;
     }
+    shop();
 }
 
-var randomNumber = function(min, max) {
-    var value = Math.floor(Math.random() * (max - min) + min);
+var getPlayerName = function() {
+    var name = "";
+    
+    while (name === "" || name === null) {
+        name = prompt("What is your robot's name?");
+    }
 
-    return value;
+    return name;
 }
 
 var playerInfo = {
-    name: window.prompt("What is your robot's name?"),
+    name: getPlayerName(),
     health: 100,
     attack: 10,
     money: 10,
@@ -197,7 +220,6 @@ var playerInfo = {
     }
 }
 
-var enemyNames = ["Roborto", "Amy Android", "Robo Trumble"];
 var enemyInfo = [
     {
         name: "Roborto",
